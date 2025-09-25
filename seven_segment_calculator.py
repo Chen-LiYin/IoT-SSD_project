@@ -25,6 +25,9 @@ SEGMENTS = {
     'g': 12   # 中間橫線
 }
 
+# 小數點 GPIO 接腳
+DP_PIN = 16  # 小數點(DP)
+
 # LED 指示燈接腳
 GREEN_LED_PIN = 20  # 綠色LED - 正常狀態
 RED_LED_PIN = 21    # 紅色LED - 錯誤狀態
@@ -52,6 +55,10 @@ def setup_gpio():
         GPIO.setup(pin, GPIO.OUT)
         GPIO.output(pin, GPIO.LOW)
     
+    # 設定小數點接腳
+    GPIO.setup(DP_PIN, GPIO.OUT)
+    GPIO.output(DP_PIN, GPIO.LOW)
+    
     # 設定雙色LED指示燈接腳
     GPIO.setup(GREEN_LED_PIN, GPIO.OUT)
     GPIO.setup(RED_LED_PIN, GPIO.OUT)
@@ -60,6 +67,7 @@ def setup_gpio():
     print(f"GPIO 初始化完成")
     print(f"   綠色LED接腳：{GREEN_LED_PIN}")
     print(f"   紅色LED接腳：{RED_LED_PIN}")
+    print(f"   小數點接腳：{DP_PIN}")
 
 def green_led_on():
     """開啟綠色LED"""
@@ -139,10 +147,11 @@ def goodbye_led_sequence():
         time.sleep(0.3)
     all_leds_off()
 
-def display_character(char):
+def display_character(char, show_dp=False):
     """顯示指定字符（數字或符號）"""
     if char == '.':
-        # 小數點處理（如果有額外的小數點LED）
+        # 僅顯示小數點
+        GPIO.output(DP_PIN, GPIO.HIGH)
         return
     
     if char not in DIGIT_PATTERNS:
@@ -157,11 +166,19 @@ def display_character(char):
             GPIO.output(pin, GPIO.HIGH)
         else:
             GPIO.output(pin, GPIO.LOW)
+    
+    # 設定小數點狀態
+    if show_dp:
+        GPIO.output(DP_PIN, GPIO.HIGH)
+    else:
+        GPIO.output(DP_PIN, GPIO.LOW)
 
 def clear_display():
     """清空顯示器"""
     for pin in SEGMENTS.values():
         GPIO.output(pin, GPIO.LOW)
+    # 同時清空小數點
+    GPIO.output(DP_PIN, GPIO.LOW)
 
 def display_number_sequence(number_str, delay=1.5):
     """逐個顯示數字序列，包含LED指示"""
@@ -178,21 +195,28 @@ def display_number_sequence(number_str, delay=1.5):
     
     # 3. 逐個顯示每個字符
     for i, char in enumerate(number_str):
+        # 檢查下一個字符是否為小數點
+        show_dp = (i + 1 < len(number_str) and number_str[i + 1] == '.')
+        
         if char == '.':
             print(".", end="")
+            # 小數點不需要額外顯示時間，因為已經和前面的數字一起顯示了
             continue
             
         if char == '-':
             print("-", end="", flush=True)
-            display_character('-')
+            display_character('-', show_dp)
             time.sleep(delay)
         elif char.isdigit():
             print(char, end="", flush=True)
-            display_character(int(char))
+            display_character(int(char), show_dp)
             time.sleep(delay)
+            if show_dp:
+                print(".", end="", flush=True)
         
         # 在字符間短暫清空（但保持綠色LED亮著）
-        if i < len(number_str) - 1:
+        # 跳過小數點後的清空，因為小數點是和數字一起顯示的
+        if i < len(number_str) - 1 and number_str[i] != '.' and (i + 1 >= len(number_str) or number_str[i + 1] != '.'):
             clear_display()
             time.sleep(0.3)
     
