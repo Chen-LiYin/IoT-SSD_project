@@ -84,3 +84,5 @@ LED指示燈：
 - 綠色LED：GPIO 20 → 電阻 → GND
 - 紅色LED：GPIO 21 → 電阻 → GND
 ```
+
+![Alt text](<photo/截圖 2025-09-29 下午6.28.39.png>)
