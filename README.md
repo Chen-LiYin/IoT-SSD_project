@@ -1,4 +1,4 @@
-IoT Assignment 1 - Raspberry Pi + 7-Segment Display (SSD)
+# IoT Assignment 1 - Raspberry Pi + 7-Segment Display (SSD)
 
 113423037 資管碩二 陳俐吟 Jerry
 
@@ -10,7 +10,7 @@ Determine your SSD is CC or CA (and find the common pin)
     ![Alt text](<photo/截圖 2025-09-29 下午2.26.25.png>)
 -   Common pin
     ![Alt text](<photo/截圖 2025-09-29 下午2.32.44.png>)
-    ![Alt text](<photo/截圖 2025-09-29 下午2.32.44.png>)
+    ![![Alt text](image.png)](<photo/截圖 2025-09-29 下午2.35.04.png>)
 
 # PartB
 
